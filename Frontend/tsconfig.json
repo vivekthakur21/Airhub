@@ -1,18 +1,9 @@
 {
   "files": [],
-  "references": [
-    {
-      "path": "./Frontend/tsconfig.app.json"
-    },
-    {
-      "path": "./Frontend/tsconfig.node.json"
-    }
-  ],
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
   "compilerOptions": {
     "paths": {
-      "@/*": [
-        "./Frontend/src/*"
-      ]
+      "@/*": ["./src/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,
