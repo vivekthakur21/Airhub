@@ -178,11 +178,12 @@ const getAppSettings = async (req, res, next) => {
 
 const updateAppSettings = async (req, res, next) => {
   try {
+    const { _id, createdAt, updatedAt, __v, ...updateData } = req.body;
     let settings = await Settings.findOne();
     if (!settings) {
-      settings = await Settings.create(req.body);
+      settings = await Settings.create(updateData);
     } else {
-      settings = await Settings.findOneAndUpdate({}, req.body, { new: true });
+      settings = await Settings.findOneAndUpdate({}, updateData, { new: true });
     }
     res.json(settings);
   } catch (error) {

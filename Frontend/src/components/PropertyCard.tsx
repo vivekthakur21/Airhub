@@ -11,8 +11,9 @@ interface Props {
 }
 
 export const PropertyCard = ({ property, priority }: Props) => {
-  const { isWished, toggleWishlist } = useApp();
-  const wished = isWished(property.id);
+  const { isWished, toggleWishlist, settings } = useApp();
+  const wished = isWished(property._id || property.id);
+  const currencySymbol = settings?.currency === "INR" ? "₹" : settings?.currency === "EUR" ? "€" : "$";
   const [imgIdx, setImgIdx] = useState(0);
 
   return (
@@ -85,7 +86,7 @@ export const PropertyCard = ({ property, priority }: Props) => {
           <p className="line-clamp-1 text-sm text-muted-foreground">{property.title}</p>
           <p className="text-sm text-muted-foreground">{property.beds} beds · {property.guests} guests</p>
           <p className="pt-1 text-foreground">
-            <span className="font-semibold">${property.price}</span>
+            <span className="font-semibold">{currencySymbol}{property.price}</span>
             <span className="text-muted-foreground"> night</span>
           </p>
         </div>

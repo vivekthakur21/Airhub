@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { adminApi } from "@/lib/api";
+import { adminApi, HotelStat } from "@/lib/api";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import { Loader2, TrendingUp, Users, Hotel, Calendar, DollarSign } from "lucide-react";
 
@@ -26,7 +26,7 @@ const AdminAnalytics = () => {
 
   const statCards = [
     { label: "Total Users", value: stats?.totalUsers || 0, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-    { label: "Total Hotels", value: stats?.totalListings || 0, icon: Hotel, color: "text-purple-600", bg: "bg-purple-50" },
+    { label: "Total Hotels", value: stats?.totalHotels || 0, icon: Hotel, color: "text-purple-600", bg: "bg-purple-50" },
     { label: "Total Bookings", value: stats?.totalBookings || 0, icon: Calendar, color: "text-pink-600", bg: "bg-pink-50" },
     { label: "Total Revenue", value: `$${(stats?.totalRevenue || 0).toLocaleString()}`, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
   ];
@@ -116,9 +116,9 @@ const AdminAnalytics = () => {
                     paddingAngle={5}
                     dataKey="revenue"
                   >
-                    {analytics?.hotelData.map((_: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
+                    {analytics?.hotelData.map((_: HotelStat, index: number) => (
+                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                     ))}
                   </Pie>
                   <Tooltip 
                     contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
@@ -127,8 +127,8 @@ const AdminAnalytics = () => {
               </ResponsiveContainer>
             </div>
             <div className="flex flex-col justify-center space-y-4">
-              {analytics?.hotelData.slice(0, 5).map((item: any, i: number) => (
-                <div key={i} className="flex items-center justify-between">
+              {analytics?.hotelData.slice(0, 5).map((item: HotelStat, i: number) => (
+                 <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                     <span className="text-sm font-medium">{item.name}</span>

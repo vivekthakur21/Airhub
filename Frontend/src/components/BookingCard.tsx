@@ -23,7 +23,7 @@ export const BookingCard = ({ property }: { property: Property }) => {
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
   const [isBooking, setIsBooking] = useState(false);
-  const { user } = useApp();
+  const { user, settings } = useApp();
   const navigate = useNavigate();
 
   const nights = useMemo(() => {
@@ -33,8 +33,12 @@ export const BookingCard = ({ property }: { property: Property }) => {
   }, [checkIn, checkOut]);
 
   const subtotal = property.price * nights;
-  const fee = Math.round(subtotal * 0.12);
+  const serviceFeePercent = settings?.serviceFee || 5;
+  const fee = Math.round(subtotal * (serviceFeePercent / 100));
   const total = subtotal + fee;
+
+  const currencySymbol = settings?.currency === "USD" ? "$" : settings?.currency === "EUR" ? "€" : "₹";
+  const currencyCode = settings?.currency || "INR";
 
   const handleReserve = async () => {
     if (!user) {
@@ -61,13 +65,13 @@ export const BookingCard = ({ property }: { property: Property }) => {
     try {
       const propId = property._id || property.id;
       // 1. Create Order on Backend
-      const order = await paymentApi.createOrder(total, propId, checkIn, checkOut);
+      const order = await paymentApi.createOrder(total, propId, checkIn, checkOut, currencyCode);
 
       // 2. Open Razorpay Checkout
       const options = {
         key: "rzp_test_Sl1A6HQsDyb5sI", 
         amount: order.amount,
-        currency: order.currency,
+        currency: currencyCode,
         name: "Cozy Finds",
         description: `Booking for ${property.title}`,
         order_id: order.id,
@@ -133,7 +137,7 @@ export const BookingCard = ({ property }: { property: Property }) => {
   return (
     <div className="sticky top-28 rounded-3xl border border-border bg-card p-6 shadow-elegant">
       <div className="flex items-baseline justify-between">
-        <p className="text-foreground"><span className="text-2xl font-bold">${property.price}</span><span className="text-muted-foreground"> night</span></p>
+        <p className="text-foreground"><span className="text-2xl font-bold">{currencySymbol}{property.price}</span><span className="text-muted-foreground"> night</span></p>
         <span className="flex items-center gap-1 text-sm">
           <Star className="h-3.5 w-3.5 fill-foreground" /> {property.rating}
           <span className="text-muted-foreground">· {property.reviews} reviews</span>
@@ -166,10 +170,10 @@ export const BookingCard = ({ property }: { property: Property }) => {
       </button>
       <p className="mt-2 text-center text-xs text-muted-foreground">You won't be charged yet</p>
       <div className="mt-5 space-y-2 text-sm">
-        <Row label={`$${property.price} × ${nights} nights`} value={`$${subtotal}`} />
-        <Row label="Service fee" value={`$${fee}`} />
+        <Row label={`${currencySymbol}${property.price} × ${nights} nights`} value={`${currencySymbol}${subtotal}`} />
+        <Row label="Service fee" value={`${currencySymbol}${fee}`} />
         <div className="my-3 border-t border-border" />
-        <Row label="Total" value={`$${total}`} bold />
+        <Row label="Total" value={`${currencySymbol}${total}`} bold />
       </div>
     </div>
   );

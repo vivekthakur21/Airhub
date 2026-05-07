@@ -1,11 +1,14 @@
 import { categories } from "@/data/properties";
 import { cn } from "@/lib/utils";
+import { useApp } from "@/context/AppContext";
 
 export interface Filters { type: string; maxPrice: number; location: string; }
 interface Props { filters: Filters; onChange: (f: Filters) => void; onReset: () => void; }
 
-export const FilterSidebar = ({ filters, onChange, onReset }: Props) => (
-  <aside className="sticky top-28 h-fit space-y-6 rounded-3xl border border-border bg-card p-6 shadow-soft">
+export const FilterSidebar = ({ filters, onChange, onReset }: Props) => {
+  const { settings } = useApp();
+  return (
+    <aside className="sticky top-28 h-fit space-y-6 rounded-3xl border border-border bg-card p-6 shadow-soft">
     <div className="flex items-center justify-between">
       <h3 className="font-display text-lg font-bold">Filters</h3>
       <button onClick={onReset} className="text-xs font-semibold text-primary underline-offset-4 hover:underline">Reset</button>
@@ -19,7 +22,7 @@ export const FilterSidebar = ({ filters, onChange, onReset }: Props) => (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Max price</p>
-        <span className="text-sm font-semibold text-foreground">\${filters.maxPrice}</span>
+        <span className="text-sm font-semibold text-foreground">{settings?.currency === "INR" ? "₹" : settings?.currency === "EUR" ? "€" : "$"}{filters.maxPrice}</span>
       </div>
       <input type="range" min={50} max={800} step={10} value={filters.maxPrice}
         onChange={(e) => onChange({ ...filters, maxPrice: Number(e.target.value) })}
@@ -39,3 +42,4 @@ export const FilterSidebar = ({ filters, onChange, onReset }: Props) => (
     </div>
   </aside>
 );
+};

@@ -3,9 +3,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Save, Globe, Shield, Settings as SettingsIcon, Bell } from "lucide-react";
+import { useApp } from "@/context/AppContext";
 
 const AdminSettings = () => {
   const queryClient = useQueryClient();
+  const { refreshSettings } = useApp();
   const { data: settings, isLoading } = useQuery({
     queryKey: ["admin-settings"],
     queryFn: adminApi.getSettings,
@@ -23,6 +25,7 @@ const AdminSettings = () => {
     mutationFn: adminApi.updateSettings,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-settings"] });
+      refreshSettings();
       toast({ title: "Settings Saved", description: "Application configurations updated successfully." });
     },
     onError: (err: any) => {

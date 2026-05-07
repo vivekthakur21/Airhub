@@ -42,6 +42,23 @@ export interface AdminStats {
   totalRevenue: number;
 }
 
+export interface MonthlyStat {
+  _id: string;
+  revenue: number;
+  bookings: number;
+}
+
+export interface HotelStat {
+  name: string;
+  bookings: number;
+  revenue: number;
+}
+
+export interface DetailedAnalytics {
+  monthlyData: MonthlyStat[];
+  hotelData: HotelStat[];
+}
+
 export const authApi = {
   signup: (name: string, email: string, password: string) =>
     request<AuthUser>("/auth/signup", {
@@ -57,10 +74,10 @@ export const authApi = {
 };
 
 export const paymentApi = {
-  createOrder: (amount: number, listingId: string, checkIn: string, checkOut: string) =>
+  createOrder: (amount: number, listingId: string, checkIn: string, checkOut: string, currency: string) =>
     request<RazorpayOrder>("/payments/order", {
       method: "POST",
-      body: JSON.stringify({ amount, listingId, checkIn, checkOut }),
+      body: JSON.stringify({ amount, listingId, checkIn, checkOut, currency }),
     }),
 
   verifyPayment: (paymentData: any) =>
@@ -84,8 +101,8 @@ export const bookingApi = {
 
 export const adminApi = {
   getStats: () => request<AdminStats>("/admin/stats"),
-  getAnalytics: () => request<any[]>("/admin/analytics"),
-  getDetailedAnalytics: () => request<any>("/admin/analytics/detailed"),
+  getAnalytics: () => request<MonthlyStat[]>("/admin/analytics"),
+  getDetailedAnalytics: () => request<DetailedAnalytics>("/admin/analytics/detailed"),
   getUsers: () => request<AuthUser[]>("/admin/users"),
   deleteUser: (id: string) => request<any>(`/admin/users/${id}`, { method: "DELETE" }),
   getBookings: () => request<any[]>("/admin/bookings"),

@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-
+const dns = require('dns');
 const path = require('path');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
+
+// Set DNS servers to resolve MongoDB SRV issues
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const seedAdmin = async () => {
   try {

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode, useCallback } from "react";
-import type { AuthUser } from "@/lib/api";
+import type { AuthUser, adminApi } from "@/lib/api";
+import { adminApi as api } from "@/lib/api";
 
 type Theme = "light" | "dark";
 
@@ -13,6 +14,9 @@ interface AppContextValue {
   user: AuthUser | null;
   loginUser: (userData: AuthUser) => void;
   logoutUser: () => void;
+  // Settings
+  settings: any;
+  refreshSettings: () => void;
 }
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
@@ -44,6 +48,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       return null;
     }
   });
+  
+  const [settings, setSettings] = useState<any>(null);
+
+  const fetchSettings = useCallback(async () => {
+    try {
+      const data = await api.getSettings();
+      setSettings(data);
+    } catch (err) {
+      console.error("Failed to fetch settings:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -80,8 +99,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       user,
       loginUser,
       logoutUser,
+      settings,
+      refreshSettings: fetchSettings,
     }),
-    [theme, wishlist, user, loginUser, logoutUser]
+    [theme, wishlist, user, loginUser, logoutUser, settings, fetchSettings]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
