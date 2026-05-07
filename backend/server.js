@@ -15,7 +15,7 @@ connectDB();
 app.use(express.static(path.join(__dirname, '../Frontend/dist')));
 
 // All other GET requests not handled before will return our React app
-app.get('(.*)', (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../Frontend/dist/index.html'));
 });
 
