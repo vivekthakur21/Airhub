@@ -50,20 +50,30 @@ const Auth = () => {
 
     setLoading(true);
     try {
-      const userData =
-        mode === "signup"
-          ? await authApi.signup(name.trim(), email.trim(), password)
-          : await authApi.login(email.trim(), password);
-
-      loginUser(userData);
-      toast({
-        title: mode === "signup" ? "Account created! 🎉" : "Welcome back! 👋",
-        description: `You are now logged in as ${userData.name}.`,
-      });
-      navigate("/");
+      if (mode === 'signup') {
+        // Signup: just create account, do NOT auto-login
+        await authApi.signup(name.trim(), email.trim(), password);
+        toast({
+          title: 'Account created! 🎉',
+          description: 'Your account is ready. Please log in to continue.',
+        });
+        // Switch to login tab so user can authenticate
+        setMode('login');
+        setName('');
+        setPassword('');
+      } else {
+        // Login: authenticate and store session
+        const userData = await authApi.login(email.trim(), password);
+        loginUser(userData);
+        toast({
+          title: 'Welcome back! 👋',
+          description: `You are now logged in as ${userData.name}.`,
+        });
+        navigate('/');
+      }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Something went wrong";
-      toast({ title: "Authentication failed", description: message, variant: "destructive" });
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      toast({ title: 'Authentication failed', description: message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }

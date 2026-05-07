@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const generateToken = require('../utils/generateToken');
+const generateToken = require('../utils/generateToken'); // only used in login
 
 // @desc    Register new user
 // @route   POST /api/auth/signup
@@ -24,12 +24,10 @@ const signup = async (req, res, next) => {
     });
 
     if (user) {
+      // Do NOT return a token on signup — user must login separately
       res.status(201).json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
+        success: true,
+        message: 'Account created successfully. Please log in.',
       });
     } else {
       res.status(400);
